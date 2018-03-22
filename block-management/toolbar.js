@@ -16,13 +16,15 @@ export default class Toolbar extends React.Component<PropsType> {
 				<Button
 					style={ styles.toolbarButton }
 					onPress={ this.props.onButtonPressed.bind( this, ToolbarButton.UP, this.props.index ) }
-					title="Up"
+					title="▲"
 				/>
+				<View style={ styles.buttonSeparator } />
 				<Button
 					style={ styles.toolbarButton }
 					onPress={ this.props.onButtonPressed.bind( this, ToolbarButton.DOWN, this.props.index ) }
-					title="Down"
+					title="▼"
 				/>
+				<View style={ styles.buttonSeparator } />
 				<Button
 					style={ styles.toolbarButton }
 					onPress={ this.props.onButtonPressed.bind(
@@ -30,8 +32,9 @@ export default class Toolbar extends React.Component<PropsType> {
 						ToolbarButton.SETTINGS,
 						this.props.index
 					) }
-					title="Settings"
+					title="⚙️"
 				/>
+				<View style={ styles.buttonSeparator } />
 				<Button
 					style={ styles.toolbarButton }
 					onPress={ this.props.onButtonPressed.bind(
@@ -39,7 +42,7 @@ export default class Toolbar extends React.Component<PropsType> {
 						ToolbarButton.DELETE,
 						this.props.index
 					) }
-					title="Delete"
+					title="🗑"
 				/>
 			</View>
 		);
@@ -51,11 +54,12 @@ const styles = StyleSheet.create( {
 		height: 34,
 		backgroundColor: 'white',
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 20,
-		paddingRight: 20,
+		margin: 8,
 	},
 	toolbarButton: {
 		padding: 4,
+	},
+	buttonSeparator: {
+		width: 8,
 	},
 } );

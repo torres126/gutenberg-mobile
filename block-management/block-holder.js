@@ -67,17 +67,18 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 
 const styles = StyleSheet.create( {
 	blockHolder: {
+		backgroundColor: 'white',
 		flex: 1,
 	},
 	blockContainer: {
-		backgroundColor: 'white',
+		padding: 8,
 	},
 	blockContent: {
-		padding: 10,
+		padding: 8,
 	},
 	blockTitle: {
 		backgroundColor: 'grey',
-		paddingLeft: 10,
+		paddingLeft: 8,
 		paddingTop: 4,
 		paddingBottom: 4,
 	},
