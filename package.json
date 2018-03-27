@@ -3,20 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@types/jest": "^22.2.2",
+    "@types/react": "^16.1.0",
+    "@types/react-native": "^0.52.20",
+    "@types/react-test-renderer": "^16.0.1",
     "@wordpress/babel-preset-default": "^1.1.2",
     "cross-env": "^5.1.4",
     "flow-bin": "0.56.0",
     "jest-expo": "25.0.0",
     "prettier": "git+https://github.com/Automattic/calypso-prettier.git#calypso-1.9",
-    "react-native-scripts": "1.11.1",
-    "react-test-renderer": "16.2.0"
+    "react-native-scripts-ts": "^1.11.4",
+    "react-native-typescript-transformer": "^1.2.3",
+    "react-test-renderer": "16.2.0",
+    "ts-jest": "^22.4.2",
+    "tslib": "^1.9.0",
+    "typescript": "^2.8.1"
   },
-  "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
+  "main": "./node_modules/react-native-scripts-ts/build/bin/crna-entry.js",
   "scripts": {
-    "start": "react-native-scripts start",
-    "eject": "react-native-scripts eject",
-    "android": "react-native-scripts android",
-    "ios": "react-native-scripts ios",
+    "start": "react-native-scripts-ts start",
+    "eject": "react-native-scripts-ts eject",
+    "android": "react-native-scripts-ts android",
+    "ios": "react-native-scripts-ts ios",
     "test": "cross-env NODE_ENV=test node node_modules/jest/bin/jest.js --verbose --config jest.config.js",
     "flow": "flow",
     "prettier": "prettier --write *.js *block-management/*.js",
@@ -24,10 +32,30 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "globals": {
+      "ts-jest": {
+        "useBabelrc": true
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "moduleNameMapper": {
       "@wordpress/hooks": "<rootDir>/wordpress/hooks",
       "@wordpress/i18n": "<rootDir>/gutenberg/i18n",
       "@gutenberg": "<rootDir>/gutenberg"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.[tj]s?(x)",
+      "**/?(*.)(spec|test).[tj]s?(x)"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
     }
   },
   "dependencies": {
