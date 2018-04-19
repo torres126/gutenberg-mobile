@@ -8,6 +8,7 @@ import { Platform, Switch, Text, View, FlatList } from 'react-native';
 import RecyclerViewList, { DataSource } from 'react-native-recyclerview-list';
 import BlockHolder from './block-holder';
 import { ToolbarButton } from './constants';
+import BlockPicker from './block-picker';
 
 import type { BlockType } from '../store/';
 
@@ -30,6 +31,7 @@ type PropsType = BlockListType;
 type StateType = {
 	dataSource: DataSource,
 	showHtml: boolean,
+	showBlockPicker: boolean,
 };
 
 export default class BlockManager extends React.Component<PropsType, StateType> {
@@ -40,6 +42,7 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		this.state = {
 			dataSource: new DataSource( this.props.blocks, ( item: BlockType ) => item.uid ),
 			showHtml: false,
+			showBlockPicker: false,
 		};
 	}
 
@@ -60,6 +63,9 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 	onToolbarButtonPressed( button: number, uid: string ) {
 		const dataSourceBlockIndex = this.getDataSourceIndexFromUid( uid );
 		switch ( button ) {
+			case ToolbarButton.PLUS:
+				this.setState( { showBlockPicker: true } );
+				break;
 			case ToolbarButton.UP:
 				this.state.dataSource.moveUp( dataSourceBlockIndex );
 				this.props.moveBlockUpAction( uid );
@@ -151,6 +157,7 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 				</View>
 				{ this.state.showHtml && <Text style={ styles.htmlView }>{ this.serializeToHtml() }</Text> }
 				{ ! this.state.showHtml && list }
+				<BlockPicker visible={ this.state.showBlockPicker } />
 			</View>
 		);
 	}
