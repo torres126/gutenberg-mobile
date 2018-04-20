@@ -2,27 +2,52 @@
  * @format */
 
 import React from 'react';
-import { Modal, Text, TouchableNativeFeedback, FlatList, View, StyleSheet } from 'react-native';
+import {
+	Modal,
+	Text,
+	TouchableOpacity,
+	FlatList,
+	View,
+	StyleSheet,
+	BackHandler,
+} from 'react-native';
 
-type PropsType = { visible: boolean };
+type PropsType = {
+	visible: boolean,
+	onBlockButtonPressed: ( uid: string ) => void,
+	closeBlockPicker: () => void,
+};
 type StateType = {};
 
 export default class BlockPicker extends React.Component<PropsType, StateType> {
+	componentWillMount() {
+		BackHandler.addEventListener( 'hardwareBackPress', function() {
+			this.props.closeBlockPicker();
+			return true;
+		} );
+	}
+
+	componentWillUnmount() {
+		BackHandler.removeEventListener( 'hardwareBackPress' );
+	}
+
 	renderItem( { item } ) {
 		return (
-			<TouchableNativeFeedback onPress={ () => {} }>
-				<View
-					style={ {
-						flex: 1,
-						margin: 4,
-						height: 150,
-						justifyContent: 'center',
-						backgroundColor: '#CCC',
-					} }
-				>
+			<TouchableOpacity
+				onPress={ this.props.onBlockButtonPressed() }
+				activeOpacity={ 0.5 }
+				style={ {
+					flex: 1,
+					margin: 4,
+					height: 150,
+					justifyContent: 'center',
+					backgroundColor: '#CCC',
+				} }
+			>
+				<View>
 					<Text style={ { textAlign: 'center' } }>{ item.text } </Text>
 				</View>
-			</TouchableNativeFeedback>
+			</TouchableOpacity>
 		);
 	}
 
@@ -37,7 +62,7 @@ export default class BlockPicker extends React.Component<PropsType, StateType> {
 				] }
 				horizontal={ false }
 				numColumns={ 2 }
-				renderItem={ this.renderItem }
+				renderItem={ this.renderItem.bind( this ) }
 			/>
 		);
 	}

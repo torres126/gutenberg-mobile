@@ -157,7 +157,13 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 				</View>
 				{ this.state.showHtml && <Text style={ styles.htmlView }>{ this.serializeToHtml() }</Text> }
 				{ ! this.state.showHtml && list }
-				<BlockPicker visible={ this.state.showBlockPicker } />
+				<BlockPicker
+					visible={ this.state.showBlockPicker }
+					onBlockButtonPressed={ () => {} }
+					closeBlockPicker={ () => {
+						this.setState( { showBlockPicker: false } );
+					} }
+				/>
 			</View>
 		);
 	}
