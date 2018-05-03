@@ -65,6 +65,7 @@ const autoImportAssets = [
 	'_colors.scss',
 	'_admin-schemes.scss',
 	'_breakpoints.scss',
+	'_font-variables.scss',
 	'_variables.scss',
 	'_mixins.scss',
 	'_animations.scss',

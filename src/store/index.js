@@ -34,6 +34,10 @@ const moreBlockInstance = createBlock( 'core/more', {
 	customText: undefined,
 } );
 
+const headingBlockInstance = createBlock( 'core/heading', {
+	content: [ 'h2' ],
+} );
+
 const initialState: StateType = {
 	// TODO: get blocks list block state should be externalized (shared with Gutenberg at some point?).
 	// If not it should be created from a string parsing (commented HTML to json).
@@ -72,6 +76,7 @@ const initialState: StateType = {
 		},
 		{ ...codeBlockInstance, focused: false },
 		{ ...moreBlockInstance, focused: false },
+		{ ...headingBlockInstance, focused: false },
 		{
 			uid: '4',
 			name: 'paragraph',
