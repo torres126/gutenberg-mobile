@@ -7,7 +7,7 @@
     "scssfiles": "src/*.scss src/**/*.scss"
   },
   "devDependencies": {
-    "@wordpress/babel-preset-default": "^1.1.2",
+    "@wordpress/babel-preset-default": "1.2.0",
     "babel-eslint": "^8.2.2",
     "babel-plugin-react-native-classname-to-style": "^1.2.1",
     "babel-plugin-react-native-platform-specific-extensions": "^1.0.1",
@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@wordpress/i18n": "^1.1.0",
+    "@wordpress/is-shallow-equal": "^1.0.2",
     "babel-plugin-module-resolver": "^3.1.0",
     "classnames": "^2.2.5",
     "jed": "^1.1.1",
@@ -62,7 +63,6 @@
     "react-native": "0.55.3",
     "react-native-recyclerview-list": "git+https://github.com/wordpress-mobile/react-native-recyclerview-list.git#bfccbaab6b5954e18f8b0ed441ba38275853b79c",
     "react-redux": "^5.0.7",
-    "redux": "^3.7.2",
-    "shallowequal": "^1.0.2"
+    "redux": "^3.7.2"
   }
 }

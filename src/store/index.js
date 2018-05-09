@@ -4,8 +4,8 @@
  */
 
 // Gutenberg imports
-import { registerCoreBlocks } from '@gutenberg/blocks/library';
-import { createBlock } from '@gutenberg/blocks/api';
+import { registerCoreBlocks } from '@gutenberg/core-blocks';
+// import { createBlock } from '@gutenberg/blocks';
 
 import { createStore } from 'redux';
 import { reducer } from './reducers';
@@ -26,13 +26,13 @@ export type StateType = {
 
 registerCoreBlocks();
 
-const codeBlockInstance = createBlock( 'core/code', {
-	content: 'if name == "World":\n    return "Hello World"\nelse:\n    return "Hello Pony"',
-} );
+// const codeBlockInstance = createBlock( 'core/code', {
+// 	content: 'if name == "World":\n    return "Hello World"\nelse:\n    return "Hello Pony"',
+// } );
 
-const moreBlockInstance = createBlock( 'core/more', {
-	customText: undefined,
-} );
+// const moreBlockInstance = createBlock( 'core/more', {
+// 	customText: undefined,
+// } );
 
 const initialState: StateType = {
 	// TODO: get blocks list block state should be externalized (shared with Gutenberg at some point?).
@@ -70,8 +70,8 @@ const initialState: StateType = {
 			innerBlocks: [],
 			focused: false,
 		},
-		{ ...codeBlockInstance, focused: false },
-		{ ...moreBlockInstance, focused: false },
+		// { ...codeBlockInstance, focused: false },
+		// { ...moreBlockInstance, focused: false },
 		{
 			uid: '4',
 			name: 'paragraph',
