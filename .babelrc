@@ -10,6 +10,7 @@
         "alias": {
           "@wordpress/blocks": "./gutenberg/blocks",
           "@wordpress/components": "./gutenberg/components",
+          "@wordpress/editor": "./gutenberg/editor",
           "@wordpress/element": "./gutenberg/element",
           "@wordpress/hooks": "./wordpress/hooks",
           "@wordpress/utils": "./gutenberg/utils",
