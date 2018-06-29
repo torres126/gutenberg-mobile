@@ -81,7 +81,7 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 					onContentSizeChange={ ( event ) => {
 						this.setState( { ...this.state, aztecheight: event.nativeEvent.contentSize.height } );
 					} }
-					onEndEditing={ (event) => {
+					onEndEditing={ ( event ) => {
 						this.props.onChange( this.props.uid, {
 							...this.props.attributes,
 							content: event.nativeEvent.text,
