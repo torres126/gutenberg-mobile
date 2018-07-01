@@ -94,6 +94,12 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 						accessibilityLabel="aztec-html"
 						multiline={ true }
 						value={ this.props.attributes.content }
+						onChange={ ( event ) => {
+							this.props.onChange( this.props.uid, {
+								...this.props.attributes,
+								content: event.nativeEvent.text,
+							} );
+						} }
 					/>
 					<RCTAztecView
 						accessibilityLabel="aztec-view"
