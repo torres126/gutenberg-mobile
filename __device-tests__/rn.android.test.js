@@ -8,7 +8,7 @@ const APPIUM_SERVER_PORT = 4723;
 const config = {
 	platformName: 'Android',
 	deviceName: 'Android',
-	app: './android/app/build/outputs/apk/app-debug.apk', // relative to root of project
+	app: './android/app/build/outputs/apk/debug/app-debug.apk', // relative to root of project
 };
 
 describe( 'Device RN tests', () => {
