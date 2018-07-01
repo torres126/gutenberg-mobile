@@ -8,6 +8,8 @@
   },
   "devDependencies": {
     "@wordpress/babel-preset-default": "^1.1.2",
+    "appium": "^1.8.1",
+    "appium-doctor": "^1.4.3",
     "babel-eslint": "^8.2.2",
     "babel-plugin-react-native-classname-to-style": "^1.2.1",
     "babel-plugin-react-native-platform-specific-extensions": "^1.0.1",
@@ -32,7 +34,9 @@
     "react-dom": "^16.2.0",
     "react-native-sass-transformer": "^1.1.1",
     "react-test-renderer": "16.2.0",
-    "remote-redux-devtools": "^0.5.12"
+    "remote-redux-devtools": "^0.5.12",
+    "sprintf-js": "^1.1.1",
+    "wd": "^1.7.0"
   },
   "scripts": {
     "check-gb-unused-babelrc": "cd gutenberg/; git ls-files --error-unmatch .babelrc 2>/dev/null; ss=$?; cd ..; (if [[ $ss -gt 0 ]]; then (exit 0); else (echo \"'.babelrc' is tracked in Gutenberg, cannot overwrite!\"; exit 1); fi)",
@@ -44,23 +48,34 @@
     "ios": "react-native run-ios",
     "test": "cross-env NODE_ENV=test node node_modules/jest/bin/jest.js --verbose --config jest.config.js",
     "test:debug": "cross-env NODE_ENV=test node --inspect-brk node_modules/jest/bin/jest.js --runInBand --verbose --config jest.config.js",
+    "test:rnandroid": "TEST_RN_ON_DEVICE=true yarn run test",
     "flow": "flow",
     "prettier": "prettier-eslint --write $npm_package_config_jsfiles $npm_package_config_scssfiles",
     "clean": "yarn test --clearCache; watchman watch-del-all; rm -rf node_modules; rm -f yarn.lock; rm -rf $TMPDIR/react-*; rm -rf $TMPDIR/metro-cache-*; rm -rf $TMPDIR/jest_*",
     "clean:install": "yarn clean; yarn",
     "lint": "eslint $npm_package_config_jsfiles",
-    "lint:fix": "eslint $npm_package_config_jsfiles --fix"
+    "lint:fix": "eslint $npm_package_config_jsfiles --fix",
+    "appium": "appium",
+    "appium:doctor": "appium-doctor"
   },
   "dependencies": {
+    "@wordpress/autop": "^1.0.6",
+    "@wordpress/element": "^1.0.0-alpha.1",
     "@wordpress/hooks": "^1.2.0",
     "@wordpress/i18n": "^1.1.0",
     "@wordpress/is-shallow-equal": "^1.0.1",
     "babel-plugin-module-resolver": "^3.1.0",
+    "babel-preset-es2015": "^6.24.1",
     "classnames": "^2.2.5",
+    "dom-react": "^2.2.1",
+    "domutils": "^1.7.0",
+    "hpq": "^1.2.0",
     "jed": "^1.1.1",
     "js-beautify": "^1.7.5",
+    "jsdom-jscore": "git+https://github.com/iamcco/jsdom-jscore-rn.git#6eac88dd5d5e7c21ce6382abde7dbc376d7f7f59",
     "jsx-to-string": "^1.3.1",
     "memize": "^1.0.5",
+    "node-libs-react-native": "^1.0.2",
     "node-sass": "^4.8.3",
     "prettier-eslint": "^8.8.1",
     "react": "16.3.1",
@@ -68,6 +83,7 @@
     "react-native-recyclerview-list": "git+https://github.com/wordpress-mobile/react-native-recyclerview-list.git#bfccbaab6b5954e18f8b0ed441ba38275853b79c",
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
-    "shallowequal": "^1.0.2"
+    "shallowequal": "^1.0.2",
+    "simple-html-tokenizer": "^0.5.1"
   }
 }

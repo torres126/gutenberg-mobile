@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 import RCTAztecView from 'react-native-aztec';
 import Toolbar from './toolbar';
 
@@ -14,6 +14,7 @@ import styles from './block-holder.scss';
 
 // Gutenberg imports
 import { getBlockType } from '@gutenberg/blocks/api';
+import { parse } from '@gutenberg/blocks';
 
 type PropsType = BlockType & {
 	onChange: ( uid: string, attributes: mixed ) => void,
@@ -70,26 +71,56 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 				/>
 			);
 		} else if ( this.props.name === 'aztec' ) {
+			let isValidGB = false;
+			try {
+				const parsed = parse( this.props.attributes.content );
+
+				isValidGB = parsed[ 0 ].isValid;
+			} catch ( error ) {
+				// nothing special here. Just have the resulting isValidGB be `false`
+				// console.log( error );
+			}
+
+			const parseResultUi = isValidGB ? (
+				<Text accessibilityLabel="parse-valid">Parse result: valid</Text>
+			) : (
+				<Text accessibilityLabel="parse-invalid">Parse result: invalid!</Text>
+			);
+
 			return (
-				<RCTAztecView
-					accessibilityLabel="aztec-view"
-					style={ [
-						styles[ 'aztec-editor' ],
-						{ minHeight: Math.max( _minHeight, this.state.aztecHeight ) },
-					] }
-					text={ this.props.attributes.content }
-					onContentSizeChange={ ( event ) => {
-						this.setState( { ...this.state, aztecHeight: event.nativeEvent.contentSize.height } );
-					} }
-					onChange={ ( event ) => {
-						this.props.onChange( this.props.uid, {
-							...this.props.attributes,
-							content: event.nativeEvent.text,
-						} );
-					} }
-					color={ 'black' }
-					maxImagesWidth={ 200 }
-				/>
+				<View>
+					<View>{ parseResultUi }</View>
+					<TextInput
+						accessibilityLabel="aztec-html"
+						multiline={ true }
+						value={ this.props.attributes.content }
+						onChange={ ( event ) => {
+							this.props.onChange( this.props.uid, {
+								...this.props.attributes,
+								content: event.nativeEvent.text,
+							} );
+						} }
+					/>
+					<RCTAztecView
+						accessibilityLabel="aztec-view"
+						style={ [
+							styles[ 'aztec-editor' ],
+							{ minHeight: Math.max( _minHeight, this.state.aztecheight ) },
+						] }
+						text={ { text: this.props.attributes.content } }
+						onContentSizeChange={ ( event ) => {
+							this.setState( { ...this.state, aztecheight: event.nativeEvent.contentSize.height } );
+						} }
+						onChange={ ( event ) => {
+							this.props.onChange( this.props.uid, {
+								...this.props.attributes,
+								content: event.nativeEvent.text,
+							} );
+						} }
+						color={ 'black' }
+						maxImagesWidth={ 200 }
+					/>
+				</View>
 			);
 		}
 
