@@ -44,6 +44,9 @@ const initialMoreBlockHtml = `
 const codeBlockInstance = parse( initialCodeBlockHtml )[ 0 ];
 const moreBlockInstance = parse( initialMoreBlockHtml )[ 0 ];
 
+const para1BlockInstance = createBlock( 'core/paragraph', {
+	content: '<b>This is a test</b>',
+} );
 const initialState: StateType = {
 	// TODO: get blocks list block state should be externalized (shared with Gutenberg at some point?).
 	// If not it should be created from a string parsing (commented HTML to json).
@@ -68,6 +71,7 @@ const initialState: StateType = {
 			innerBlocks: [],
 			focused: false,
 		},
+		{ ...para1BlockInstance, focused: false },
 		{
 			uid: '2',
 			name: 'paragraph',
