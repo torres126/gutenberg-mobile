@@ -5,7 +5,7 @@
 
 // Gutenberg imports
 import { registerCoreBlocks } from '@gutenberg/core-blocks';
-import { parse } from '@gutenberg/blocks';
+import { parse, createBlock } from '@gutenberg/blocks';
 
 import { createStore } from 'redux';
 import { reducer } from './reducers';
@@ -41,12 +41,14 @@ const initialMoreBlockHtml = `
 <!-- /wp:more -->
 `;
 
+const initialParagraphBlockHtml = `<p>Hello World!</p>`;
+
 const codeBlockInstance = parse( initialCodeBlockHtml )[ 0 ];
 const moreBlockInstance = parse( initialMoreBlockHtml )[ 0 ];
-
-const para1BlockInstance = createBlock( 'core/paragraph', {
-	content: '<b>This is a test</b>',
+const paragraphBlockInstance = createBlock( 'core/paragraph', {
+	content: initialParagraphBlockHtml,
 } );
+
 const initialState: StateType = {
 	// TODO: get blocks list block state should be externalized (shared with Gutenberg at some point?).
 	// If not it should be created from a string parsing (commented HTML to json).
@@ -71,7 +73,7 @@ const initialState: StateType = {
 			innerBlocks: [],
 			focused: false,
 		},
-		{ ...para1BlockInstance, focused: false },
+		{ ...paragraphBlockInstance, focused: false },
 		{
 			uid: '2',
 			name: 'paragraph',
