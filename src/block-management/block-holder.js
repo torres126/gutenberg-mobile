@@ -71,6 +71,8 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 			);
 		} else if ( this.props.name === 'aztec' ) {
 			return (
+				// <Text>{ this.props.attributes.content }</Text>
+
 				<RCTAztecView
 					accessibilityLabel="aztec-view"
 					style={ [
