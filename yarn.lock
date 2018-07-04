@@ -558,6 +558,9 @@
     react "16.4.1"
     react-dom "16.4.1"
 
+"@wordpress/grammar@file:gutenberg/packages/grammar":
+  version "1.0.0-alpha.2"
+
 "@wordpress/hooks@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@wordpress/hooks/-/hooks-1.2.0.tgz#258196ca9c59a08b28faf759706ab409b12674c9"
