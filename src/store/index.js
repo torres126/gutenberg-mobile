@@ -41,8 +41,15 @@ const initialMoreBlockHtml = `
 <!-- /wp:more -->
 `;
 
+const initialParagraphBlockHtml = `
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">In 2018, WordPress will modernize, streamline, and simplify the content creation experience with Gutenberg.</p>
+<!-- /wp:paragraph -->
+`;
+
 const codeBlockInstance = parse( initialCodeBlockHtml )[ 0 ];
 const moreBlockInstance = parse( initialMoreBlockHtml )[ 0 ];
+const paragraphBlockInstance = parse( initialParagraphBlockHtml )[ 0 ];
 
 const initialState: StateType = {
 	// TODO: get blocks list block state should be externalized (shared with Gutenberg at some point?).
@@ -92,6 +99,7 @@ const initialState: StateType = {
 		},
 		{ ...codeBlockInstance, focused: false },
 		{ ...moreBlockInstance, focused: false },
+		{ ...paragraphBlockInstance, focused: false },
 		{
 			uid: '5',
 			name: 'paragraph',
@@ -109,7 +117,7 @@ const initialState: StateType = {
 
 const devToolsEnhancer =
 	// ( 'development' === process.env.NODE_ENV && require( 'remote-redux-devtools' ).default ) ||
-	( () => {} );
+	() => {};
 
 export function setupStore( state: StateType = initialState ) {
 	const store = createStore( reducer, state, devToolsEnhancer() );

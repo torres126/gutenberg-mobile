@@ -11,6 +11,7 @@
         "alias": {
           "react-native-aztec": "./react-native-aztec",
           "@wordpress/blocks": "./blocks",
+          "@wordpress/components": "./components",
           "@wordpress/editor": "./editor",
           "@gutenberg": "./gutenberg"
         },
