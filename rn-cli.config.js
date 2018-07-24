@@ -14,6 +14,7 @@ module.exports = {
 		// are automagically resolved by Metro so, there is no list of them anywhere.
 		return blacklist( [
 			/gutenberg\/packages\/(autop|deprecated|hooks|i18n|is-shallow-equal)\/.*/,
+			/react-native-aztec\/examples\/.*/,
 		] );
 	},
 	getTransformModulePath() {
