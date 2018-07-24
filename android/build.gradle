@@ -1,5 +1,9 @@
 buildscript {
     ext {
+        buildToolsVersion = "26.0.3"
+        minSdkVersion = 16
+        compileSdkVersion = 26
+        targetSdkVersion = 26
         gradlePluginVersion = '3.0.1'
         kotlinVersion = '1.2.31'
         supportLibVersion = '27.1.1'
