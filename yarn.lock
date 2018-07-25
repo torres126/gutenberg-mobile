@@ -1136,6 +1136,15 @@
     "@wordpress/is-shallow-equal" "^1.1.1"
     lodash "^4.17.10"
 
+"@wordpress/compose@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@wordpress/compose/-/compose-1.0.1.tgz#fdfb24b27390ca97db432108c47188b4fc96dea8"
+  dependencies:
+    "@babel/runtime" "^7.0.0-beta.52"
+    "@wordpress/element" "^1.0.1"
+    "@wordpress/is-shallow-equal" "^1.1.1"
+    lodash "^4.17.10"
+
 "@wordpress/deprecated@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@wordpress/deprecated/-/deprecated-1.0.1.tgz#8769d791b228022caef156dbbff0f21eb2b21f3e"
