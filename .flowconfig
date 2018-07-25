@@ -19,6 +19,9 @@
 ; Ignore metro
 .*/node_modules/metro/.*
 
+; Ignore various node_modules
+<PROJECT_ROOT>/node_modules/prettier/.*
+
 ; Ignore react-native-recyclerview-list example app
 <PROJECT_ROOT>/node_modules/react-native-recyclerview-list/example
 
