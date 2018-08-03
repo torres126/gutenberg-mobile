@@ -1,7 +1,6 @@
 /** @format */
 
 const defaultPlatform = 'android';
-const rnPlatform = process.env.TEST_RN_PLATFORM || defaultPlatform;
 if ( process.env.TEST_RN_PLATFORM ) {
 	// eslint-disable-next-line no-console
 	console.log( 'Setting RN platform to: ' + process.env.TEST_RN_PLATFORM );
@@ -11,9 +10,6 @@ if ( process.env.TEST_RN_PLATFORM ) {
 }
 
 module.exports = {
-	preset: 'jest-react-native',
-	testEnvironment: 'jsdom',
-	testPathIgnorePatterns: [ '/node_modules/', '/gutenberg/' ],
 	moduleFileExtensions: [
 		'native.js',
 		'android.js',
@@ -36,9 +32,11 @@ module.exports = {
 		// Mock the CSS modules. See https://facebook.github.io/jest/docs/en/webpack.html#handling-static-assets
 		'\\.(scss)$': '<rootDir>/__mocks__/styleMock.js',
 	},
-	haste: {
-		defaultPlatform: rnPlatform,
-		platforms: [ 'android', 'ios', 'native' ],
-		providesModuleNodeModules: [ 'react-native' ],
-	},
+	preset: 'react-native',
+	rootDir: '.',
+	testEnvironment: 'jsdom',
+	testPathIgnorePatterns: [
+		'/node_modules/',
+		'/gutenberg/',
+	],
 };

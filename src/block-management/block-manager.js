@@ -3,7 +3,7 @@
  * @flow
  */
 
-import React from 'react';
+import { Component } from '@wordpress/element';
 import { Platform, Switch, Text, View, FlatList } from 'react-native';
 import RecyclerViewList, { DataSource } from 'react-native-recyclerview-list';
 import BlockHolder from './block-holder';
