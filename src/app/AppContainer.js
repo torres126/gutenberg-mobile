@@ -1,4 +1,6 @@
-/** @format */
+/** @flow
+ * @format */
+
 import { connect } from 'react-redux';
 import {
 	updateBlockAttributes,
@@ -7,6 +9,7 @@ import {
 	moveBlockDownAction,
 	deleteBlockAction,
 	parseBlocksAction,
+	createBlockAction,
 } from '../store/actions';
 import MainApp from './MainApp';
 
@@ -36,6 +39,9 @@ const mapDispatchToProps = ( dispatch, ownProps ) => {
 			dispatch( parseBlocksAction( html ) );
 		},
 
+		createBlockAction: ( clientId, block ) => {
+			dispatch( createBlockAction( clientId, block ) );
+		},
 	};
 };
 

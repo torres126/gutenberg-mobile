@@ -11,13 +11,13 @@ import type { BlockActionType } from '../actions';
 import { parse } from '@wordpress/blocks';
 
 function findBlock( blocks, clientId: string ) {
-	return find( blocks, obj => {
+	return find( blocks, ( obj ) => {
 		return obj.clientId === clientId;
 	} );
 }
 
 function findBlockIndex( blocks, clientId: string ) {
-	return findIndex( blocks, obj => {
+	return findIndex( blocks, ( obj ) => {
 		return obj.clientId === clientId;
 	} );
 }
@@ -112,6 +112,12 @@ export const reducer = (
 		case ActionTypes.BLOCK.PARSE: {
 			const parsed = parse(action.html)
 			return { blocks: parsed, refresh: ! state.refresh, fullparse: true };
+		}
+		case ActionTypes.BLOCK.CREATE: {
+			// TODO we need to set focused: true and search for the currently focused block and
+			// set that one to `focused: false`.
+			blocks.push(action.block);
+			return { blocks: blocks, refresh: ! state.refresh };
 		}
 		default:
 			return state;
