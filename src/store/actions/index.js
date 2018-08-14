@@ -4,6 +4,7 @@
  */
 
 import ActionTypes from './ActionTypes';
+import type { BlockType } from '../';
 
 export type BlockActionType = string => {
 	type: $Values<typeof ActionTypes.BLOCK>,
@@ -13,6 +14,13 @@ export type BlockActionType = string => {
 export type ParseActionType = string => {
 	type: $Values<typeof ActionTypes.BLOCK>,
 	html: string,
+};
+
+export type CreateActionType = ( string, BlockType, string ) => {
+	type: $Values<typeof ActionTypes.BLOCK>,
+	clientId: string,
+	block: BlockType,
+	clientIdAbove: string,
 };
 
 export function updateBlockAttributes( clientId: string, attributes: mixed ) {
@@ -48,8 +56,9 @@ export const parseBlocksAction: ParseActionType = html => ( {
 	html,
 } );
 
-export const createBlockAction: BlockActionType = (clientId, block) => ( {
+export const createBlockAction: CreateActionType = ( clientId, block, clientIdAbove ) => ( {
 	type: ActionTypes.BLOCK.CREATE,
-	block: block,
 	clientId,
+	block: block,
+	clientIdAbove,
 } );

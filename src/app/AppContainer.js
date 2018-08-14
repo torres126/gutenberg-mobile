@@ -38,9 +38,8 @@ const mapDispatchToProps = ( dispatch, ownProps ) => {
 		parseBlocksAction: ( html ) => {
 			dispatch( parseBlocksAction( html ) );
 		},
-
-		createBlockAction: ( clientId, block ) => {
-			dispatch( createBlockAction( clientId, block ) );
+		createBlockAction: ( clientId, block, clientIdAbove ) => {
+			dispatch( createBlockAction( clientId, block, clientIdAbove ) );
 		},
 	};
 };
