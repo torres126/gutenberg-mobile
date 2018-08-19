@@ -5,6 +5,7 @@ import '../globals';
 
 import React from 'react';
 import { Provider } from 'react-redux';
+import { PortalProvider } from 'react-native-portal';
 import { setupStore } from '../store';
 import AppContainer from './AppContainer';
 import { Store } from 'redux';
@@ -25,4 +26,8 @@ export class AppProvider extends React.Component<PropsType, StateType> {
 }
 
 // eslint-disable-next-line react/display-name
-export default () => <AppProvider store={ setupStore() } />;
+export default () => (
+	<PortalProvider>
+		<AppProvider store={ setupStore() } />
+	</PortalProvider>
+);

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, TouchableWithoutFeedback } from 'react-native';
+import { WhitePortal } from 'react-native-portal';
 import Toolbar from './toolbar';
 
 import type { BlockType } from '../store/';
@@ -86,6 +87,7 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 					<View style={ styles.blockTitle }>
 						<Text>BlockType: { this.props.name }</Text>
 					</View>
+					{ this.props.focused && <WhitePortal name="blockFormatToolbar" /> }
 					<View style={ styles.blockContainer }>{ this.getBlockForType.bind( this )() }</View>
 					{ this.renderToolbarIfBlockFocused.bind( this )() }
 				</View>
