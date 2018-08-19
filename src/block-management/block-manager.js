@@ -4,8 +4,17 @@
  */
 
 import React from 'react';
-import { Platform, Switch, Text, View, FlatList, TextInput, KeyboardAvoidingView } from 'react-native';
+import {
+	Platform,
+	Switch,
+	Text,
+	View,
+	FlatList,
+	TextInput,
+	KeyboardAvoidingView,
+} from 'react-native';
 import RecyclerViewList, { DataSource } from 'react-native-recyclerview-list';
+import { WhitePortal } from 'react-native-portal';
 import BlockHolder from './block-holder';
 import { ToolbarButton } from './constants';
 
@@ -45,6 +54,12 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 			showHtml: false,
 			html: '',
 		};
+	}
+
+	anyBlockFocused(): boolean {
+		return this.props.blocks.some( ( block ) => {
+			return block.focused;
+		} );
 	}
 
 	onBlockHolderPressed( clientId: string ) {
@@ -175,6 +190,7 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 				</View>
 				{ this.state.showHtml && this.renderHTML() }
 				{ ! this.state.showHtml && list }
+				<WhitePortal name="blockFormatToolbar" />
 			</View>
 		);
 	}
@@ -188,11 +204,11 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		}
 
 		this.setState( { showHtml } );
-	}
+	};
 
 	handleHTMLUpdate = ( html: string ) => {
 		this.setState( { html } );
-	}
+	};
 
 	renderItem( value: { item: BlockType, clientId: string } ) {
 		return (
@@ -218,8 +234,8 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 					numberOfLines={ 0 }
 					style={ styles.htmlView }
 					value={ this.state.html }
-					onChangeText={ this.handleHTMLUpdate }>
-				</TextInput>
+					onChangeText={ this.handleHTMLUpdate }
+				/>
 			</KeyboardAvoidingView>
 		);
 	}
