@@ -24,3 +24,15 @@ global.document = doc;
 if ( ! global.window.Node ) {
 	global.window.Node = jsdomLevel1Core.dom.level1.core.Node;
 }
+
+if ( ! global.window.matchMedia ) {
+	global.window.matchMedia = () => ( {
+		matches: false,
+		addListener: () => {},
+		removeListener: () => {},
+	} );
+}
+
+if ( ! global.window.addEventListener ) {
+	global.window.addEventListener = () => {};
+}
