@@ -31,7 +31,7 @@ module.exports = {
 		return blacklist( [ new RegExp( path.basename( __dirname ) + '/gutenberg/.*' ) ] );
 	},
 	getTransformModulePath() {
-		return require.resolve( './sass-transformer-inside-gb.js' );
+		return require.resolve( './sass-transformer.js' );
 	},
 	getSourceExts() {
 		return [ 'js', 'json', 'scss', 'sass' ];

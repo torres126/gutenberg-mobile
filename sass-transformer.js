@@ -59,9 +59,21 @@ if ( reactNativeMinorVersion >= 52 ) {
 	};
 }
 
+const gutenbergPath = function() {
+	try {
+		const gutenbergPackage = require( '../package.json' );
+		if ( gutenbergPackage.name == 'gutenberg' ) {
+			console.log(path.dirname(__dirname));
+			return path.dirname( __dirname );
+		}
+	} catch {
+	}
+	return path.join( __dirname, 'gutenberg' );
+}();
+
 // TODO: need to find a way to pass the include paths and the default asset files via some config
 const autoImportIncludePaths = [
-	path.join( path.dirname( __filename ), 'gutenberg/edit-post/assets/stylesheets' ),
+	path.join( gutenbergPath, 'edit-post/assets/stylesheets' ),
 ];
 const autoImportAssets = [
 	'_colors.scss',
