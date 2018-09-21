@@ -1,21 +1,17 @@
 /** @format */
-const blacklist = require( 'metro' ).createBlacklist;
+const blacklist = require( 'metro-config/src/defaults/blacklist' );
 const enm = require( './extra-node-modules.config.js' );
+const blacklistElements = blacklist( [
+	/gutenberg\/packages\/(autop|compose|deprecated|hooks|i18n|is-shallow-equal|blob|redux-routine)\/.*/,
+] );
 
 module.exports = {
 	extraNodeModules: enm,
-	getBlacklistRE: function() {
-		// Blacklist the GB packages we want to consume from NPM (online) directly.
-		// On the other hand, GB packages that are loaded from the source tree directly
-		// are automagically resolved by Metro so, there is no list of them anywhere.
-		return blacklist( [
-			/gutenberg\/packages\/(autop|compose|deprecated|hooks|i18n|is-shallow-equal|blob|redux-routine)\/.*/,
-		] );
+	resolver: {
+		blacklistRE: blacklistElements,
+		sourceExts: [ 'js', 'json', 'scss', 'sass' ],
 	},
-	getTransformModulePath() {
-		return require.resolve( './sass-transformer.js' );
-	},
-	getSourceExts() {
-		return [ 'js', 'json', 'scss', 'sass' ];
+	transformer: {
+		babelTransformerPath: require.resolve( './sass-transformer.js' ),
 	},
 };
