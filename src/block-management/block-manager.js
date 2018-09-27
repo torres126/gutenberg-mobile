@@ -14,7 +14,9 @@ import BlockPicker from './block-picker';
 import HTMLTextInput from '../components/html-text-input';
 
 // Gutenberg imports
+import { SlotFillProvider } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
+import { BlockFormatControls } from '@wordpress/editor';
 
 export type BlockListType = {
 	onChange: ( clientId: string, attributes: mixed ) => void,
@@ -201,27 +203,32 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		);
 
 		return (
-			<View style={ styles.container }>
-				<View style={ styles.switch }>
-					<Switch
-						activeText={ 'On' }
-						inActiveText={ 'Off' }
-						value={ this.state.showHtml }
-						onValueChange={ this.handleSwitchEditor }
-					/>
-					<Text style={ styles.switchLabel }>View html output</Text>
-					<Switch
-						activeText={ 'On' }
-						inActiveText={ 'Off' }
-						value={ this.state.inspectBlocks }
-						onValueChange={ this.handleInspectBlocksChanged }
-					/>
-					<Text style={ styles.switchLabel }>Inspect blocks</Text>
+			<SlotFillProvider>
+				<View style={ styles.container }>
+					<View style={ styles.switch }>
+						<Switch
+							activeText={ 'On' }
+							inActiveText={ 'Off' }
+							value={ this.state.showHtml }
+							onValueChange={ this.handleSwitchEditor }
+						/>
+						<Text style={ styles.switchLabel }>View html output</Text>
+						<Switch
+							activeText={ 'On' }
+							inActiveText={ 'Off' }
+							value={ this.state.inspectBlocks }
+							onValueChange={ this.handleInspectBlocksChanged }
+						/>
+						<Text style={ styles.switchLabel }>Inspect blocks</Text>
+					</View>
+					{ this.state.showHtml && this.renderHTML() }
+					{ ! this.state.showHtml && list }
+					{ blockTypePicker }
+					<View style={ { height: 30 } }>
+						<BlockFormatControls.Slot />
+					</View>
 				</View>
-				{ this.state.showHtml && this.renderHTML() }
-				{ ! this.state.showHtml && list }
-				{ blockTypePicker }
-			</View>
+			</SlotFillProvider>
 		);
 	}
 
