@@ -13,6 +13,7 @@ import styles from './block-holder.scss';
 
 // Gutenberg imports
 import { getBlockType, getUnknownTypeHandlerName } from '@wordpress/blocks';
+import { BlockEdit } from '@wordpress/editor';
 
 type PropsType = BlockType & {
 	showTitle: boolean,
@@ -50,25 +51,21 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 	}
 
 	getBlockForType() {
-		// Since unsupported blocks are handled in block-manager.js, at this point the block should definitely
-		// be supported.
-		const blockType = getBlockType( this.props.name );
-		const Block = blockType.edit;
-
 		let style;
-		if ( blockType.name === 'core/code' ) {
+		if ( this.props.name === 'core/code' ) {
 			style = styles.blockCode;
-		} else if ( blockType.name === 'core/paragraph' ) {
+		} else if ( this.props.name === 'core/paragraph' ) {
 			style = styles.blockText;
 		}
 
 		return (
-			<Block
+			<BlockEdit
+				name={ this.props.name }
 				attributes={ { ...this.props.attributes } }
 				// pass a curried version of onChanged with just one argument
 				setAttributes={ ( attrs ) =>
-					this.props.onChange( this.props.clientId, { ...this.props.attributes, ...attrs } )
-				}
+					this.props.onChange( this.props.clientId, { ...this.props.attributes, ...attrs } ) }
+				clientId={ this.props.clientId }
 				isSelected={ this.props.focused }
 				style={ style }
 			/>
