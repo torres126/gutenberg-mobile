@@ -20,6 +20,8 @@ type PropsType = BlockType & {
 	onToolbarButtonPressed: ( button: number, clientId: string ) => void,
 	onBlockHolderPressed: ( clientId: string ) => void,
 	insertBlocksAfter: ( blocks: Array<Object> ) => void,
+	onMediaLibraryPress: mixed,
+	onUploadMediaPress: mixed,
 };
 
 type StateType = {
@@ -66,6 +68,8 @@ export default class BlockHolder extends React.Component<PropsType, StateType> {
 		return (
 			<Block
 				attributes={ { ...this.props.attributes } }
+				onMediaLibraryPress={ this.props.onMediaLibraryPress }
+				onUploadPress={ this.props.onUploadMediaPress }
 				// pass a curried version of onChanged with just one argument
 				setAttributes={ ( attrs ) =>
 					this.props.onChange( this.props.clientId, { ...this.props.attributes, ...attrs } )

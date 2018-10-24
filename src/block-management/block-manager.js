@@ -16,8 +16,9 @@ import HTMLTextInput from '../components/html-text-input';
 // Gutenberg imports
 import { createBlock, serialize } from '@wordpress/blocks';
 
-import { NativeModules } from 'react-native'
+import { NativeModules, NativeEventEmitter } from 'react-native'
 const { GBPostManager } = NativeModules;
+const postManagerEmitter = new NativeEventEmitter(GBPostManager);
 
 export type BlockListType = {
 	onChange: ( clientId: string, attributes: mixed ) => void,
@@ -178,6 +179,25 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		GBPostManager.close();
 	}
 
+	onMediaLibraryButtonPressed = () => {
+		GBPostManager.showMediaLibrary();
+	}
+
+	onUploadMediaButtonPressed = () => {
+		GBPostManager.showMediaLibrary();
+	}
+
+	subscription = postManagerEmitter.addListener(
+		'mediaSelected',
+		(url) => this.onMediaSelected(url)
+	);
+
+	onMediaSelected = (url: string) => {
+		console.log(url);
+		const clientId = this.props.blocks[0].clientId;
+		this.onChange(clientId, url)
+	}
+
 	serializeBlocksToHtml() {
 		return this.props.blocks
 			.map( this.serializeBlock )
@@ -296,6 +316,8 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		return (
 			<View>
 				<BlockHolder
+					onMediaLibraryPress={ this.onMediaLibraryButtonPressed }
+					onUploadMediaPress={ this.onUploadMediaButtonPressed }
 					key={ value.clientId }
 					onToolbarButtonPressed={ this.onToolbarButtonPressed.bind( this ) }
 					onBlockHolderPressed={ this.onBlockHolderPressed.bind( this ) }
