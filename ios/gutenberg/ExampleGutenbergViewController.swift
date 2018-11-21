@@ -1,8 +1,10 @@
 
 import UIKit
+import RNTAztecView
 
-class GutenbergViewController: UIViewController {
-    lazy var gutenberg = Gutenberg()
+class ExampleGutenbergViewController: UIViewController {
+    let gutenberg = Gutenberg()
+    let mediaProvider = MediaProvider()
 
     override func loadView() {
         view = gutenberg.rootView
@@ -12,6 +14,12 @@ class GutenbergViewController: UIViewController {
         super.viewDidLoad()
         addSaveButton()
         gutenberg.delegate = self
+        guard let aztecManager = gutenberg.module(for: RCTAztecViewManager.self) as? RCTAztecViewManager else {
+            fatalError("Aztec manager not found in RN Bridge modules.")
+        }
+        aztecManager.attachmentDelegate = mediaProvider.attachmentDelegate
+        aztecManager.imageProvider = mediaProvider.attachmentImageProvider
+
         navigationController?.navigationBar.isTranslucent = false
     }
 
@@ -24,7 +32,7 @@ class GutenbergViewController: UIViewController {
     }
 }
 
-extension GutenbergViewController: GutenbergBridgeDelegate {
+extension ExampleGutenbergViewController: GutenbergBridgeDelegate {
     
     func gutenbergDidProvideHTML(_ html: String, changed: Bool) {
         print("Did receive HTML: \(html) changed: \(changed)")

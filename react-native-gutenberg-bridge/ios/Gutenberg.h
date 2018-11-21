@@ -16,6 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)invalidate;
 
+/**
+ * Returns the Native Module for the given class from the React Native Bridge module list.
+ *
+ * @param aClass The class of the module requested.
+ * @return An instance of the module or nil.
+ */
+- (nullable id)moduleForClass:(Class)aClass;
+
 #pragma mark - Messages
 
 - (void)requestHTML;

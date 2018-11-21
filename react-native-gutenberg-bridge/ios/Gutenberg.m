@@ -35,6 +35,11 @@
     _bridge = nil;
 }
 
+- (id)moduleForClass:(Class)aClass
+{
+    return [self.bridge moduleForClass:aClass];
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

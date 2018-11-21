@@ -10,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        let rootViewController = GutenbergViewController()
+        let rootViewController = ExampleGutenbergViewController()
 
         window?.rootViewController = UINavigationController(rootViewController: rootViewController)
         window?.makeKeyAndVisible()
