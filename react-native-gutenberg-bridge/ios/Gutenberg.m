@@ -13,10 +13,11 @@
 
 @implementation Gutenberg
 
-- (instancetype)initWithProps:(NSDictionary<NSString *, id> *)props
+- (instancetype)initWithContent:(NSString *)initialContent
 {
     self = [super init];
     if (self) {
+        NSDictionary *props = [self initialPropsWithContent:initialContent];
         _gutenbergBridgeModule = [RNReactNativeGutenbergBridge new];
         _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
         _rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"gutenberg" initialProperties:props];
@@ -24,9 +25,17 @@
     return self;
 }
 
+- (NSDictionary *)initialPropsWithContent:(NSString *)content
+{
+    if (content) {
+        return @{@"initialData": content};
+    }
+    return nil;
+}
+
 - (instancetype)init
 {
-    return [self initWithProps:nil];
+    return [self initWithContent:nil];
 }
 
 - (void)invalidate

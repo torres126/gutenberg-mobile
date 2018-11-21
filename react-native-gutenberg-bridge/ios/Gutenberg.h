@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<GutenbergBridgeDelegate> delegate;
 @property (nonatomic, strong, readonly) UIView* rootView;
 
-- (instancetype)initWithProps:(nullable NSDictionary<NSString *, id> *)props NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithContent:(nullable NSString *)initialContent NS_DESIGNATED_INITIALIZER;
 
 /**
  * Invalidates the gutenberg bridge.
