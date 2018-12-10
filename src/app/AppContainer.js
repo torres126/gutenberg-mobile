@@ -118,6 +118,7 @@ class AppContainer extends React.Component<PropsType> {
 				toggleHtmlModeAction={ this.toggleHtmlModeAction }
 				updateHtmlAction={ this.updateHtmlAction }
 				mergeBlocksAction={ this.mergeBlocksAction }
+				selectedBlockIndex={ this.props.selectedBlockIndex }
 				isBlockSelected={ this.props.isBlockSelected }
 			/>
 		);

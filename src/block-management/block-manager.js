@@ -43,6 +43,7 @@ export type BlockListType = {
 	updateHtmlAction: string => void,
 	mergeBlocksAction: ( string, string ) => mixed,
 	blocks: Array<BlockType>,
+	selectedBlockIndex: number,
 	isBlockSelected: string => boolean,
 	showHtml: boolean,
 };
@@ -60,6 +61,7 @@ type StateType = {
 export class BlockManager extends React.Component<PropsType, StateType> {
 	keyboardDidShowListener: EventEmitter;
 	keyboardDidHideListener: EventEmitter;
+	list: FlatList;
 
 	constructor( props: PropsType ) {
 		super( props );
@@ -124,6 +126,12 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 
 		// no state change necessary
 		return null;
+	}
+
+	componentDidUpdate( prevProps: PropsType ) {
+		if ( prevProps.selectedBlockIndex !== this.props.selectedBlockIndex ) {
+			this.list.scrollToIndex( { animated: true, index: this.props.selectedBlockIndex } );
+		}
 	}
 
 	onInlineToolbarButtonPressed = ( button: number, clientId: string ) => {
@@ -214,7 +222,14 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 		const list = (
 			<FlatList
 				keyboardShouldPersistTaps="always"
+				ref={ ( ref ) => {
+					this.list = ref;
+				} }
 				style={ styles.list }
+				// FlatList needs this property set before you can call scrollToIndex,
+				// but we don't actually know how to compute the offset if the automatic method fails.
+				// So we're just adding an empty method so FlatList stops complaining :(
+				onScrollToIndexFailed={ () => {} }
 				data={ this.state.blocks }
 				extraData={ { refresh: this.state.refresh } }
 				keyExtractor={ ( item ) => item.clientId }

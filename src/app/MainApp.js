@@ -28,6 +28,7 @@ type PropsType = {
 	updateHtmlAction: string => void,
 	mergeBlocksAction: ( string, string ) => mixed,
 	blocks: Array<BlockType>,
+	selectedBlockIndex: number,
 	isBlockSelected: string => boolean,
 	showHtml: boolean,
 };
