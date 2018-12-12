@@ -26,7 +26,7 @@ import EventEmitter from 'events';
 
 const keyboardDidShow = 'keyboardDidShow';
 const keyboardDidHide = 'keyboardDidHide';
-const viewPosition = 0.5;
+const viewPosition = 1;
 const viewOffset = 0;
 
 export type BlockListType = {
@@ -180,26 +180,34 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 			this.setState( { ...this.state, indexToScroll: null } );
 			return;
 		}*/
-		const { selectedBlock } = this.props;
-
-		if ( (!prevProps.selectedBlock && this.props.selectedBlock) || 
-		((prevProps.selectedBlock && selectedBlock && 
-			(prevProps.selectedBlock.clientId !== selectedBlock.clientId) ))) { //selection changed recently
-			console.log("selection changed recently");
-			if ( selectedBlock && !this.isItemViewable( selectedBlock.clientId ) ) { //focused item is not viewable
-
-				const indexToScroll = this.state.blocks.findIndex( ( block ) => block.focused );
-				console.log("focused item is not viewable");
-
-			/*	const indexToScroll = this.list.props.data.findIndex(( item ) => item.clientId == (selectedBlock && selectedBlock.clientId));
-				console.log("indexToScroll: ");
-				console.log(indexToScroll);*/
-
-				if ( indexToScroll !== -1) {
-					this.setState( { ...this.state, indexToScroll } );
-					//this.list.scrollToIndex( { animated: true, index: indexToScroll, viewPosition: viewPosition, viewOffset: viewOffset} );
-				}
+		if (this.props.blocks.length > prevProps.blocks.length ) {
+			const indexToScroll = this.state.blocks.findIndex( ( block ) => block.focused );
+			if ( indexToScroll > -1 ) {
+				this.setState( { ...this.state, indexToScroll } );
 			}
+
+		/*	if ( (!prevProps.selectedBlock && this.props.selectedBlock) || 
+			((prevProps.selectedBlock && selectedBlock && 
+				(prevProps.selectedBlock.clientId !== selectedBlock.clientId) ))) { //selection changed recently
+				console.log("selection changed recently");
+				if ( selectedBlock && !this.isItemViewable( selectedBlock.clientId ) ) { //focused item is not viewable
+	
+					const indexToScroll = this.state.blocks.findIndex( ( block ) => block.focused );
+					//console.log("focused item is not viewable");
+	
+				/*	const indexToScroll = this.list.props.data.findIndex(( item ) => item.clientId == (selectedBlock && selectedBlock.clientId));
+					console.log("indexToScroll: ");
+					console.log(indexToScroll);*/
+	
+				/*	if ( indexToScroll !== -1) {
+						this.setState( { ...this.state, indexToScroll } );
+						//this.list.scrollToIndex( { animated: true, index: indexToScroll, viewPosition: viewPosition, viewOffset: viewOffset} );
+					}
+				} else {
+					console.log("focused item is viewable");
+				}
+	}*/
+	
 		}
 	}
 
@@ -219,7 +227,7 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 	}
 
 	keyboardDidHide = () => {
-		this.setState( { isKeyboardVisible: false, keyboardHeight: 0 } );
+		this.setState( { isKeyboardVisible: false } );
 	}
 
 	insertBlocksAfter( clientId: string, blocks: Array<Object> ) {
@@ -268,7 +276,7 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 	}
 
     handleViewableItemsChanged(info: ViewableItemInfoType) {
-		//console.log("handleViewableItemsChanged");
+		console.log("handleViewableItemsChanged");
 		//console.log(info);
 		this.viewableItems = info.viewableItems;
 	}
@@ -287,17 +295,21 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 				onScrollToIndexFailed={ (info) => { console.log("onScrollToIndexFailed"); console.log(info); } }
 				viewabilityConfigCallbackPairs={ this.viewabilityConfigCallbackPairs }
 				onContentSizeChange={(w,h) => {
-					console.log("onContentSizeChange");
-					console.log(w);
-					console.log(h);
+					//console.log("onContentSizeChange");
+					//console.log(w);
+					//console.log(h);
 					const { selectedBlock } = this.props;
-				
-					if ( this.state.indexToScroll ) {
+					//const indexToScroll = this.state.blocks.findIndex( ( block ) => block.focused );
+
+					if ( this.state.indexToScroll && !this.isItemViewable( selectedBlock && selectedBlock.clientId ) ) {
 					//	if ( selectedBlock && !this.isItemViewable( selectedBlock.clientId ) ) {
-							this.list.scrollToIndex( { animated: true, index: this.state.indexToScroll, viewPosition: viewPosition, viewOffset: viewOffset } );
-							console.log("onContentSizeChange scrollToIndex");
-							this.setState( { ...this.state, indexToScroll: null } );
-							return;
+						console.log("this.state.keyboardHeight in onContentSizeChange");
+
+						console.log(this.state.keyboardHeight);
+						//this.list.scrollToIndex( { animated: true, index: this.state.indexToScroll, viewPosition: 0.5, viewOffset: 0/*-( this.state.keyboardHeight - 40 )*/} );
+						console.log("scrolled To Index");
+						this.setState( { ...this.state, indexToScroll: null } );
+						return;
 					//	}
 					}
 				}
