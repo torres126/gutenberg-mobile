@@ -6,4 +6,3 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
-#import "Gutenberg.h"

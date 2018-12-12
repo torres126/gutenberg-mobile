@@ -3,6 +3,8 @@ jest.mock( '../react-native-gutenberg-bridge', () => {
 		addEventListener: jest.fn(),
 		removeEventListener: jest.fn(),
 		subscribeParentGetHtml: jest.fn(),
+		subscribeParentToggleHTMLMode: jest.fn(),
+		subscribeUpdateHtml: jest.fn(),
 	};
 } );
 

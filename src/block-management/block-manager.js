@@ -6,9 +6,9 @@
 import React from 'react';
 import { isEqual } from 'lodash';
 
-import { Switch, Text, View, FlatList, Keyboard } from 'react-native';
+import { Text, View, FlatList, Keyboard, LayoutChangeEvent } from 'react-native';
 import BlockHolder from './block-holder';
-import { InlineToolbarButton } from './constants';
+import { InlineToolbarActions } from './inline-toolbar';
 import type { BlockType } from '../store/types';
 import styles from './block-manager.scss';
 import BlockPicker from './block-picker';
@@ -17,38 +17,47 @@ import BlockToolbar from './block-toolbar';
 import KeyboardAvoidingView from '../components/keyboard-avoiding-view';
 
 // Gutenberg imports
-import { createBlock } from '@wordpress/blocks';
+import { withDispatch, withSelect } from '@wordpress/data';
+import { compose } from '@wordpress/compose';
+import { createBlock, isUnmodifiedDefaultBlock } from '@wordpress/blocks';
+import { DefaultBlockAppender } from '@wordpress/editor';
+
 import EventEmitter from 'events';
 
 const keyboardDidShow = 'keyboardDidShow';
 const keyboardDidHide = 'keyboardDidHide';
 
 export type BlockListType = {
+	rootClientId: ?string,
 	onChange: ( clientId: string, attributes: mixed ) => void,
 	focusBlockAction: string => void,
 	moveBlockUpAction: string => mixed,
 	moveBlockDownAction: string => mixed,
 	deleteBlockAction: string => mixed,
 	createBlockAction: ( string, BlockType ) => mixed,
-	parseBlocksAction: string => mixed,
+	replaceBlock: ( string, BlockType ) => mixed,
+	selectedBlock: ?BlockType,
+	selectedBlockClientId: string,
 	serializeToNativeAction: void => void,
+	toggleHtmlModeAction: void => void,
+	updateHtmlAction: string => void,
 	mergeBlocksAction: ( string, string ) => mixed,
 	blocks: Array<BlockType>,
 	isBlockSelected: string => boolean,
+	showHtml: boolean,
 };
 
 type PropsType = BlockListType;
 type StateType = {
-	showHtml: boolean,
-	inspectBlocks: boolean,
 	blockTypePickerVisible: boolean,
 	blocks: Array<BlockType>,
 	selectedBlockType: string,
 	refresh: boolean,
 	isKeyboardVisible: boolean,
+	rootViewHeight: number;
 };
 
-export default class BlockManager extends React.Component<PropsType, StateType> {
+export class BlockManager extends React.Component<PropsType, StateType> {
 	keyboardDidShowListener: EventEmitter;
 	keyboardDidHideListener: EventEmitter;
 
@@ -63,12 +72,11 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 
 		this.state = {
 			blocks: blocks,
-			showHtml: false,
-			inspectBlocks: false,
 			blockTypePickerVisible: false,
 			selectedBlockType: 'core/paragraph', // just any valid type to start from
 			refresh: false,
 			isKeyboardVisible: false,
+			rootViewHeight: 0,
 		};
 	}
 
@@ -83,13 +91,19 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 	}
 
 	onBlockTypeSelected( itemValue: string ) {
-		this.setState( { ...this.state, selectedBlockType: itemValue, blockTypePickerVisible: false } );
+		this.setState( { selectedBlockType: itemValue, blockTypePickerVisible: false } );
 
 		// create an empty block of the selected type
-		const newBlock = createBlock( itemValue, { content: 'new test text for a ' + itemValue + ' block' } );
+		const newBlock = createBlock( itemValue );
 
-		this.props.createBlockAction( newBlock.clientId, newBlock );
-
+		// now determine whether we need to replace the currently selected block (if it's empty)
+		// or just add a new block as usual
+		if ( this.isReplaceable( this.props.selectedBlock ) ) {
+			// do replace here
+			this.props.replaceBlock( this.props.selectedBlockClientId, newBlock );
+		} else {
+			this.props.createBlockAction( newBlock.clientId, newBlock );
+		}
 		// now set the focus
 		this.props.focusBlockAction( newBlock.clientId );
 	}
@@ -103,7 +117,6 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 
 		if ( ! isEqual( state.blocks, blocks ) ) {
 			return {
-				...state,
 				blocks,
 				refresh: ! state.refresh,
 			};
@@ -115,19 +128,21 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 
 	onInlineToolbarButtonPressed = ( button: number, clientId: string ) => {
 		switch ( button ) {
-			case InlineToolbarButton.UP:
+			case InlineToolbarActions.UP:
 				this.props.moveBlockUpAction( clientId );
 				break;
-			case InlineToolbarButton.DOWN:
+			case InlineToolbarActions.DOWN:
 				this.props.moveBlockDownAction( clientId );
 				break;
-			case InlineToolbarButton.DELETE:
+			case InlineToolbarActions.DELETE:
 				this.props.deleteBlockAction( clientId );
 				break;
-			case InlineToolbarButton.SETTINGS:
-				// TODO: implement settings
-				break;
 		}
+	}
+
+	onRootViewLayout = ( event: LayoutChangeEvent ) => {
+		const { height } = event.nativeEvent.layout;
+		this.setState( { rootViewHeight: height } );
 	}
 
 	componentDidMount() {
@@ -189,10 +204,8 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		}
 	};
 
-	onReplace( clientId: string, blocks: Array<Object> ) {
-		// Insert the optional blocks and then remove the block indentified by clientId
-		this.insertBlocksAfter( clientId, blocks );
-		this.props.deleteBlockAction( clientId );
+	onReplace( clientId: string, block: BlockType ) {
+		this.props.replaceBlock( clientId, block );
 	}
 
 	renderList() {
@@ -200,15 +213,17 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		// And fix problems with RecyclerViewList on Android
 		const list = (
 			<FlatList
+				keyboardShouldPersistTaps="always"
 				style={ styles.list }
 				data={ this.state.blocks }
-				extraData={ { refresh: this.state.refresh, inspectBlocks: this.state.inspectBlocks } }
+				extraData={ { refresh: this.state.refresh } }
 				keyExtractor={ ( item ) => item.clientId }
 				renderItem={ this.renderItem.bind( this ) }
 			/>
 		);
 		return (
-			<KeyboardAvoidingView style={ { flex: 1 } }>
+			<KeyboardAvoidingView style={ { flex: 1 } } parentHeight={ this.state.rootViewHeight }>
+				<DefaultBlockAppender rootClientId={ this.props.rootClientId } />
 				{ list }
 				<BlockToolbar
 					onInsertClick={ () => {
@@ -233,43 +248,35 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 				onValueSelected={ ( itemValue ) => {
 					this.onBlockTypeSelected( itemValue );
 				} }
+				isReplacement={ this.isReplaceable( this.props.selectedBlock ) }
 			/>
 		);
 
 		return (
-			<View style={ styles.container }>
-				<View style={ styles.switch }>
-					<Switch
-						activeText={ 'On' }
-						inActiveText={ 'Off' }
-						value={ this.state.showHtml }
-						onValueChange={ this.handleSwitchEditor }
-					/>
-					<Text style={ styles.switchLabel }>View html output</Text>
-					<Switch
-						activeText={ 'On' }
-						inActiveText={ 'Off' }
-						value={ this.state.inspectBlocks }
-						onValueChange={ this.handleInspectBlocksChanged }
-					/>
-					<Text style={ styles.switchLabel }>Inspect blocks</Text>
-				</View>
-				{ this.state.showHtml && this.renderHTML() }
-				{ ! this.state.showHtml && list }
+			<View style={ styles.container } onLayout={ this.onRootViewLayout }>
+				{ this.props.showHtml && this.renderHTML() }
+				{ ! this.props.showHtml && list }
 				{ this.state.blockTypePickerVisible && blockTypePicker }
 			</View>
 		);
 	}
 
-	handleSwitchEditor = ( showHtml: boolean ) => {
-		this.setState( { showHtml } );
-	};
+	isFirstBlock( index: number ) {
+		return index === 0;
+	}
 
-	handleInspectBlocksChanged = ( inspectBlocks: boolean ) => {
-		this.setState( { inspectBlocks } );
-	};
+	isLastBlock( index: number ) {
+		return index === this.state.blocks.length - 1;
+	}
 
-	renderItem( value: { item: BlockType } ) {
+	isReplaceable( block: ?BlockType ) {
+		if ( ! block ) {
+			return false;
+		}
+		return isUnmodifiedDefaultBlock( block );
+	}
+
+	renderItem( value: { item: BlockType, index: number } ) {
 		const insertHere = (
 			<View style={ styles.containerStyleAddHere } >
 				<View style={ styles.lineStyleAddHere }></View>
@@ -278,19 +285,22 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 			</View>
 		);
 
+		const canMoveUp = ! this.isFirstBlock( value.index );
+		const canMoveDown = ! this.isLastBlock( value.index );
+
 		return (
 			<View>
 				<BlockHolder
 					key={ value.item.clientId }
 					onInlineToolbarButtonPressed={ this.onInlineToolbarButtonPressed }
-					onBlockHolderPressed={ this.props.focusBlockAction }
 					onChange={ this.props.onChange }
-					showTitle={ this.state.inspectBlocks }
-					focused={ value.item.focused }
+					showTitle={ false }
 					clientId={ value.item.clientId }
+					canMoveUp={ canMoveUp }
+					canMoveDown={ canMoveDown }
 					insertBlocksAfter={ ( blocks ) => this.insertBlocksAfter( value.item.clientId, blocks ) }
 					mergeBlocks={ this.mergeBlocks }
-					onReplace={ ( blocks ) => this.onReplace( value.item.clientId, blocks ) }
+					onReplace={ ( block ) => this.onReplace( value.item.clientId, block ) }
 					{ ...value.item }
 				/>
 				{ this.state.blockTypePickerVisible && value.item.focused && insertHere }
@@ -304,3 +314,26 @@ export default class BlockManager extends React.Component<PropsType, StateType> 
 		);
 	}
 }
+
+export default compose( [
+	withSelect( ( select ) => {
+		const {
+			getSelectedBlock,
+			getSelectedBlockClientId,
+		} = select( 'core/editor' );
+
+		return {
+			selectedBlock: getSelectedBlock(),
+			selectedBlockClientId: getSelectedBlockClientId(),
+		};
+	} ),
+	withDispatch( ( dispatch ) => {
+		const {
+			replaceBlock,
+		} = dispatch( 'core/editor' );
+
+		return {
+			replaceBlock,
+		};
+	} ),
+] )( BlockManager );

@@ -7,10 +7,29 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+// import the `submoduleGitHash()` function
+apply from: 'https://gist.githubusercontent.com/hypest/e06f6097065728b6db7b7c462f8fef1a/raw/3b91756fca76e4c2a9b573313e186c47842e1f7d/submoduleGitHash.gradle'
+
+// import the `readReactNativeVersion()` function
+apply from: 'https://gist.githubusercontent.com/hypest/742448b9588b3a0aa580a5e80ae95bdf/raw/8eb62d40ee7a5104d2fcaeff21ce6f29bd93b054/readReactNativeVersion.gradle'
+
+// import the `readHashedVersion()` function
+apply from: 'https://gist.githubusercontent.com/hypest/ceaf20a8e7d9b8404e4a5ff2e6c36650/raw/e1460a128e4b9863963410d719c7d44c3adefd02/readHashedVersion.gradle'
+
+// import the `waitJitpack()` function
+apply from: 'https://gist.githubusercontent.com/hypest/f526fe0775dedce0ce0133f1400d22a4/raw/0008b271a0d28fc79957fd3c2a027f57e98f796a/wait-jitpack.gradle'
+
+group='com.github.wordpress-mobile.gutenberg-mobile'
+
+// fallback flag value for when lib is compiled individually (e.g. via jitpack)
+project.ext.buildGutenbergFromSource = false
 
 android {
     compileSdkVersion 27
@@ -27,10 +46,45 @@ android {
     }
 }
 
+def cdnOrNodeModules(remotePath, localPath) {
+    def url
+    if (rootProject.ext.buildGutenbergFromSource) {
+        url = "${project.buildDir}/../../../node_modules/${localPath}"
+    } else {
+        // if we are the root project, use a remote maven repo so jitpack can build this lib without local RN setup
+        url = "https://cdn.jsdelivr.net/npm/${remotePath}"
+        println "Will use the jsdelivr.net exposed maven repo at ${url}"
+    }
+    return url
+}
+
 repositories {
-    mavenCentral()
+    google()
+    jcenter()
+
+    maven { url "https://jitpack.io" }
+
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries)
+        def rnVersion = readReactNativeVersion('../package.json', 'peerDependencies')
+        url cdnOrNodeModules("react-native@${rnVersion}/android", "react-native/android")
+    }
+    maven {
+        // Maven repo containing AARs with JSC library built for Android
+        url cdnOrNodeModules("jsc-android@224109.1.0/dist/", "jsc-android/dist")
+    }
 }
 
 dependencies {
+    if (rootProject.ext.buildGutenbergFromSource) {
+        println "using gutenberg from source"
+        implementation project(':react-native-svg')
+        implementation project(':react-native-aztec')
+        implementation project(':react-native-recyclerview-list')
+    } else {
+        implementation (waitJitpack('com.github.wordpress-mobile', 'react-native-svg', readHashedVersion('../../package.json', 'react-native-svg', 'dependencies')))
+        implementation (waitJitpack('com.github.wordpress-mobile', 'react-native-aztec', submoduleGitHash('../../', 'react-native-aztec')))
+        implementation (waitJitpack('com.github.wordpress-mobile', 'react-native-recyclerview-list', 'a2e8ca550412504c32218fd473c55f696f18f1f7'))
+    }
     implementation 'com.facebook.react:react-native:+'
 }
