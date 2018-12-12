@@ -26,6 +26,8 @@ import EventEmitter from 'events';
 
 const keyboardDidShow = 'keyboardDidShow';
 const keyboardDidHide = 'keyboardDidHide';
+const viewPosition = 0.5;
+const viewOffset = 0;
 
 export type BlockListType = {
 	rootClientId: ?string,
@@ -54,16 +56,35 @@ type StateType = {
 	selectedBlockType: string,
 	refresh: boolean,
 	isKeyboardVisible: boolean,
-	rootViewHeight: number;
+	rootViewHeight: number,
+	indexToScroll: ?number,
+	keyboardHeight: number,
 };
+
+type ViewableItemInfoType = {
+	viewableItems:Array<BlockType>,
+}
 
 export class BlockManager extends React.Component<PropsType, StateType> {
 	keyboardDidShowListener: EventEmitter;
 	keyboardDidHideListener: EventEmitter;
+	list: FlatList;
+	viewableItems: Array<BlockType>;
+	viewabilityConfigCallbackPairs: Array;
 
 	constructor( props: PropsType ) {
 		super( props );
 
+		this.viewabilityConfigCallbackPairs = [{
+			viewabilityConfig: {
+			  minimumViewTime: 100,
+			  itemVisiblePercentThreshold: 100
+			},
+			onViewableItemsChanged: this.handleViewableItemsChanged
+		  }
+		];
+		
+		this.viewableItems = [];
 		const blocks = props.blocks.map( ( block ) => {
 			const newBlock = { ...block };
 			newBlock.focused = props.isBlockSelected( block.clientId );
@@ -77,6 +98,8 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 			refresh: false,
 			isKeyboardVisible: false,
 			rootViewHeight: 0,
+			indexToScroll: null,
+			keyboardHeight: 0,
 		};
 	}
 
@@ -150,17 +173,53 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 		this.keyboardDidHideListener = Keyboard.addListener( keyboardDidHide, this.keyboardDidHide );
 	}
 
+	componentDidUpdate(prevProps: PropsType, prevState: StateType) {
+		/*if ( this.state.indexToScroll && (this.props.isKeyboardVisible && !prevProps.isKeyboardVisible ) ) {
+			console.log("isKeyboardVisible changed recently");
+			//this.list.scrollToIndex( { animated: true, index: this.state.indexToScroll, viewPosition: viewPosition, viewOffset: viewOffset} );
+			this.setState( { ...this.state, indexToScroll: null } );
+			return;
+		}*/
+		const { selectedBlock } = this.props;
+
+		if ( (!prevProps.selectedBlock && this.props.selectedBlock) || 
+		((prevProps.selectedBlock && selectedBlock && 
+			(prevProps.selectedBlock.clientId !== selectedBlock.clientId) ))) { //selection changed recently
+			console.log("selection changed recently");
+			if ( selectedBlock && !this.isItemViewable( selectedBlock.clientId ) ) { //focused item is not viewable
+
+				const indexToScroll = this.state.blocks.findIndex( ( block ) => block.focused );
+				console.log("focused item is not viewable");
+
+			/*	const indexToScroll = this.list.props.data.findIndex(( item ) => item.clientId == (selectedBlock && selectedBlock.clientId));
+				console.log("indexToScroll: ");
+				console.log(indexToScroll);*/
+
+				if ( indexToScroll !== -1) {
+					this.setState( { ...this.state, indexToScroll } );
+					//this.list.scrollToIndex( { animated: true, index: indexToScroll, viewPosition: viewPosition, viewOffset: viewOffset} );
+				}
+			}
+		}
+	}
+
+	isItemViewable( clientId: ?string ) { //returns true if item is in the viewport and visible to user
+		return this.viewableItems.filter( ( item ) => item.key == clientId).length != 0;
+		// this.list.props.data.filter( ( item ) => item.clientId == clientId).length > 0 && 
+	}
+
 	componentWillUnmount() {
 		Keyboard.removeListener( keyboardDidShow, this.keyboardDidShow );
 		Keyboard.removeListener( keyboardDidHide, this.keyboardDidHide );
 	}
 
-	keyboardDidShow = () => {
-		this.setState( { isKeyboardVisible: true } );
+	keyboardDidShow = (e) => {
+		this.setState( { isKeyboardVisible: true, keyboardHeight: e.endCoordinates.height } );
+
 	}
 
 	keyboardDidHide = () => {
-		this.setState( { isKeyboardVisible: false } );
+		this.setState( { isKeyboardVisible: false, keyboardHeight: 0 } );
 	}
 
 	insertBlocksAfter( clientId: string, blocks: Array<Object> ) {
@@ -208,11 +267,42 @@ export class BlockManager extends React.Component<PropsType, StateType> {
 		this.props.replaceBlock( clientId, block );
 	}
 
+    handleViewableItemsChanged(info: ViewableItemInfoType) {
+		//console.log("handleViewableItemsChanged");
+		//console.log(info);
+		this.viewableItems = info.viewableItems;
+	}
+	
 	renderList() {
 		// TODO: we won't need this. This just a temporary solution until we implement the RecyclerViewList native code for iOS
 		// And fix problems with RecyclerViewList on Android
 		const list = (
 			<FlatList
+				ref={ ( ref ) => {
+					this.list = ref;
+				} }
+				// FlatList needs this property set before you can call scrollToIndex,
+				// but we don't actually know how to compute the offset if the automatic method fails.
+				// So we're just adding an empty method so FlatList stops complaining :(
+				onScrollToIndexFailed={ (info) => { console.log("onScrollToIndexFailed"); console.log(info); } }
+				viewabilityConfigCallbackPairs={ this.viewabilityConfigCallbackPairs }
+				onContentSizeChange={(w,h) => {
+					console.log("onContentSizeChange");
+					console.log(w);
+					console.log(h);
+					const { selectedBlock } = this.props;
+				
+					if ( this.state.indexToScroll ) {
+					//	if ( selectedBlock && !this.isItemViewable( selectedBlock.clientId ) ) {
+							this.list.scrollToIndex( { animated: true, index: this.state.indexToScroll, viewPosition: viewPosition, viewOffset: viewOffset } );
+							console.log("onContentSizeChange scrollToIndex");
+							this.setState( { ...this.state, indexToScroll: null } );
+							return;
+					//	}
+					}
+				}
+				}
+				//viewabilityConfig={ { viewAreaCoveragePercentThreshold: 50 } }
 				keyboardShouldPersistTaps="always"
 				style={ styles.list }
 				data={ this.state.blocks }
